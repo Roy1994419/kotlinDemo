@@ -2,9 +2,17 @@ package com.zotost.kotlindemo
 
 import android.graphics.Point
 import android.os.Bundle
+import android.os.Environment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import kotlinx.android.synthetic.main.activity_main.*
 import java.beans.PropertyChangeListener
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 
 class MainActivity : AppCompatActivity() {
@@ -14,7 +22,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-      var lis =  arrayListOf<Testf>()
+        tv_symbol.setText("哈哈哈哈")
+
+
+        var lis =  arrayListOf<Testf>()
         for (i in 0 ..10){
              lis.add(Testf())
         }
@@ -126,8 +137,7 @@ class MainActivity : AppCompatActivity() {
         val tse :String? = null;
           tse.isNullOrEmpty()
         //  test8(Test8())
-        lis.filterNotNull(); //是否为null
-
+        lis.filterNotNull(); //是否为nul
 
      val ss =  mutableListOf<Int>(122,22)
        val noVariable =    arrayListOf<Testf>(Testf(12),Testf(1252),Testf(152))
@@ -188,8 +198,147 @@ class MainActivity : AppCompatActivity() {
      var ts=   funs(Person2("sdfsdf","dsfsd",null))
 
        // lis.filter {  }  内部维持着一个for循环
+
+        val lock:Lock  = ReentrantLock();
+        lock.withLock { println("sdfsdfsfdfs") }  //加锁
+
+
+        readFirstLineFromFile(Environment.getExternalStorageDirectory().absolutePath+File.separator+"MyLog2018-09-04.txt")
+
+        testKotlin();
+
+
+       var az = ('a'..'z').toList() ;
+
+
+        val authors= listOf ("Dmitry", "Svetlana")
+        val readers = mutableListOf<String> ()
+        readers.add("Svetlana")
+
+
+        readers.filter {it !in authors  }     //高级函数
+
+        countItem(Test7())
+        max("nihao","hahah")
+
+        tsetsee(Test9(1))
+
+        val filterList = listOf("sfsd",755,"sdfers")
+
+        println(filterList.filterisinstance<String>())  //输出  sfsd sdfers
+
     }
 
+
+
+
+
+        /*
+        注意，1. 带 reified 类型参数的 inline 函数不能在 Java 代码中调用   2.普通的内联函数可以像常规函数那样在 Java 中调用一一它们可以被调用而不能被内联
+
+           为什么在 inline 函数中允许这样写 element is T，而普通的类或函数却不行？
+           编译器把实现内联函数的字节码插入每一次调用发生的地方。每次你调用带实化类型参数的函数时，编译器都知道这次特定调用
+           中用作类型实参的确切类型 因此，编译器可以生成引用作为类型 实参的具体类的字节码 实现
+         */
+    inline fun <reified T> Iterable<*>.filterisinstance() : List<T>{
+        val destination= mutableListOf<T>()
+        for (element in this)
+        {
+            if (element is T) {
+                destination.add(element)
+            }
+        }
+            return destination
+       }
+
+
+
+    /**
+     *  类型约束
+     * 指定了可以作为类型参数实参的类型必须实现了CharSequence和Appendable两个接口。
+     */
+    fun <T> tsetsee(sef:T) where T : CharSequence , T : Appendable{
+
+    }
+
+    /**
+     *   声明带实化类型参数的函数
+     */
+    inline fun<reified T> testsdf(vs :Any) = vs is T
+
+
+
+     class Demo1<Y :Any>{
+         /**
+          * 上面指定了 父类  所以  Y 不可能为null
+          */
+         fun testssdfe(t : Y){
+              //这里可以放心的调用
+             t.toString()
+         }
+     }
+
+    class Demo2<Y>{
+
+        fun testssdfe(t : Y){
+            //这里不安全
+            t?.toString() ?: "我null了就把我退出去吧"
+        }
+    }
+
+    fun <T : Test7>  countItem(t : T):Double{
+         return   t.tess()
+    }
+
+    fun<T :Comparable<T>> max(t:T ,y:T): T{
+        return if (t >y)  t else y
+    }
+
+      inline fun <T> Iterable<T>.filter(predicate: (T) -> Boolean): List<T> {
+        return filterTo(ArrayList<T>(), predicate)
+    }
+
+
+        /**
+         *   <T> 声明类型
+         */
+     fun <T> gets(t :T) : T{
+         return  t
+     }
+
+    /**
+     * 流
+     */
+    fun readFirstLineFromFile(path: String): String {
+    var s  =    BufferedReader(FileReader(path)).use lab@{              //  use保证流会被关闭
+            br -> return@lab br.readLine()                             //返回标签   可以标返回的记录  s 就是返回的记录
+        }
+        println("sdfsdfs")   //这样行 都会执行
+      return "sdf"
+    }
+
+
+
+
+
+    fun read(path: String){
+        var s  =    StringBuilder().apply ab@ {
+                  this@ab.append("aaaa")
+        }
+       println(s.toString())
+    }
+
+
+    /**
+     * 匿名方法  fun (str)
+     */
+    fun testKotlin(){
+      var sss  =  arrayListOf<String>("nihao","bu","hao")
+        sss.forEach(fun (str){
+            if(str.equals("nihao")) return         //这个return 只是结束当前的匿名方法  但是foreach还是会继续下一个 执行
+            println("wwwwwwwwwwwwww")
+        })
+    }
 
 
     data class Person2(
@@ -197,11 +346,11 @@ class MainActivity : AppCompatActivity() {
         val lastName: String,
         val phoneNurnber: String?)
 
-    //返回一个函数  通过isT 返回一个具体的函数
+    //返回一个函数  通过isT 返回一个具体的函数       有lambda的函数需要加入一个inline 关键字标识内联函数   因为 lambda 调用一次会生成一个类
      class Contest(){
          var isT : Boolean = false
         var pex : String = ""
-         fun getFun():(Person2) -> Boolean{
+        inline fun getFun():(Person2) -> Boolean{
               var test = { p : Person2 -> p.firstName.startsWith(pex) || p.lastName .startsWith(pex) }
              if(isT){
                  return test    //因为知道  test的表达式是一个 boolean类型   返回一个函数类型变量
