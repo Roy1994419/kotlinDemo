@@ -1,5 +1,9 @@
 package com.zotost.kotlindemo
 
+
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.graphics.Point
 import android.os.Bundle
 import android.os.Environment
@@ -23,8 +27,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         tv_symbol.setText("哈哈哈哈")
-
-
         var lis =  arrayListOf<Testf>()
         for (i in 0 ..10){
              lis.add(Testf())
@@ -149,7 +151,7 @@ class MainActivity : AppCompatActivity() {
 
      var intArray = IntArray(5,{i -> i*2})  //循环计算
 
-        val p2 = Te(12,23);
+        val p2 =  Te(12, 23);
         val p3 = Te(13,34);
 
         println( p2 + p3)   // 25  57
@@ -227,10 +229,138 @@ class MainActivity : AppCompatActivity() {
 
         println(filterList.filterisinstance<String>())  //输出  sfsd sdfers
 
+
+       // startActivity<MainActivity>()
+
+      /*  var sdd:Int=10;
+          var sde2:Int?=20;
+          sdd = sde2; //编译通不过  因为 sde2 可以为null*/
+
+
+
+     var setes =   object : Tsest<Test, Test>() {
+            override fun names(p: Test): Test {
+                 return Test(10,"sdf")
+            }
+
+            /**
+             *
+             */
+            override fun enumerateCats(f: (Cat) -> Number) {   //f这个对象的约束  number返回值类型
+               var ser  = f;
+
+                   println("---------------"+f)
+            }
+
+
+             fun sf(){
+                 /**
+                  * 在kotlin 中这段代码是合法 Animal Cat 的超类型，
+                   Int Number 的子
+                  */
+                 enumerateCats { Animal().test() }
+             }
+        };
+
+
+        setes.sf()
+
+        object :IPerson{
+             override fun getName(): String = "jason"
+
+             override  fun getID(): String = "00000123"
+        }
     }
 
 
 
+    interface IPerson {
+
+        //获取名字
+        fun getName(): String
+
+        //获取身份证ID
+        fun getID(): String
+    }
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    abstract class  Tsest<in T ,out Y>{
+       abstract fun names(p:T):Y     //in 逆变   out 协变
+
+       abstract fun enumerateCats (f : (Cat) -> Number)
+    }
+
+
+    fun tesflf(ass:(Cat) -> Number){
+       //类似于java Function<Cat,Number)
+    }
+
+    //  注意，构造方法 参数既不在 in 位置，也不在 out 位置
+
+
+    fun feedAll(animl : Herd<Animal>){
+
+    }
+
+
+    fun takeCareOfCat(cat : Herd<Cat>){
+          feedAll(cat)     // 因为 Cat不是Animal的子类 所以无法编译通过   需要 协变 才可以解决这个问题  协变 在 Animal父类中加入 out关键字
+
+    }
+
+
+    /**
+     * 你不能把任何类都变成协变的：这样不安全。让类在某个类型参数变为协变，
+    限制了该类中对该类型参数使用的可能性。要保证类型安全，它只能用在所谓的
+    out 位置，意味着这个类只能生产类型 的值而不能消费它们
+     */
+    class Herd<out T : Animal> {    //协变的
+        /**
+         *  （t:T）是消费类型    返回T  是生产类型
+         *  类的类型参数前的 out 关键字要求所有使用 的方法只能把 放在 out 位置
+        而不能放在in 位置。这个关键宇约束了使用T 的可能性，这保证了对应子类型
+        关系的安全性。
+         */
+        fun transfrm(t: @UnsafeVariance T): T{   //@UnsafeVariance 告诉编译器没事 按照我的意思执行就好
+            return t
+        }
+
+     /*   还需要留意的是，位置规则只覆盖了类外部可见的（ public protected
+        internal) 。私有方法的参数既不在 in 位置也不在 out 位置。变型规则只
+        防止外部使用者对类的误用但不会对类自己的实现起作用：*/
+        private fun test(t :T):T{
+          return  t
+        }
+
+    }
+
+    class Cat :Animal() {
+        fun fell(){
+
+        }
+
+
+    }
+
+    open class Animal {
+        fun fend(){
+
+        }
+        fun test():Int{
+            return 10
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 使用实化类型参数代替类引用
+     */
+    inline fun<reified T:Activity> Context.startActivity(){
+        val intent = Intent(this,T::class.java)
+        startActivity(intent)
+    }
 
 
         /*
@@ -578,6 +708,11 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        /**
+         * 内联函数使用
+        lambda 的方式导致 lambd 不能被内联，或者你不想 lambda 因为性能的关系被内联，
+        可以使用 .2 小节介绍的 noi ine 修饰符把它们标记成非内联的
+         */
         inline  fun <T : Any>  T.test3(name: String, ob :Runnable, noinline body:()->T) : String{
                  ob.run()
                 test4(name, { body() })
